@@ -20,7 +20,9 @@ pipeline {
         stage('Save Docker Image Locally') {
             steps {
                 script {
-                    sh "docker save -o /path/to/save/image/${env.IMAGE_NAME}-${env.BUILD_ID}.tar ${env.IMAGE_NAME}:${env.BUILD_ID}"
+                    // Path to save the Docker image tar file within the Jenkins repository directory
+                    def savePath = "C:\\ProgramData\\Jenkins\\.jenkins\\${env.JOB_NAME}\\${env.BUILD_ID}\\${env.IMAGE_NAME}-${env.BUILD_ID}.tar"
+                    bat "docker save -o ${savePath} ${env.IMAGE_NAME}:${env.BUILD_ID}"
                 }
             }
         }
