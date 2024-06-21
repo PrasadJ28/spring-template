@@ -1,11 +1,33 @@
-/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker { image 'maven:3.9.6-eclipse-temurin-17-alpine' } }
+    agent any
+    environment {
+        IMAGE_NAME = "your-docker-image"
+    }
     stages {
-        stage('build') {
+        stage('Clone Repository') {
             steps {
-                sh 'spring-boot:run'
+                git branch: '**', url: 'https://github.com/PrasadJ28/spring-template.git'
             }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def imageName = "${env.IMAGE_NAME}:${env.BUILD_ID}"
+                    def app = docker.build(imageName)
+                }
+            }
+        }
+        stage('Save Docker Image Locally') {
+            steps {
+                script {
+                    sh 'docker save -o /path/to/save/image/your-docker-image-${env.BUILD_ID}.tar your-docker-image:${env.BUILD_ID}'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
