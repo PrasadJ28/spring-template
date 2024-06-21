@@ -1,0 +1,16 @@
+# Maven specific files
+target
+
+# Git specific files
+.git
+.gitignore
+
+# IDE specific files
+*.iml
+*.log
+.idea
+.vscode
+*.swp
+
+# Other unwanted files and directories
+node_modules
