@@ -21,11 +21,11 @@ pipeline {
             steps {
                 script {
                     // Path to save the Docker image tar file within the Jenkins repository directory
-                    def saveDir = "C:\\ProgramData\\Jenkins\\.jenkins\\${env.JOB_NAME}\\${env.BUILD_ID}"
+                    def saveDir = "C:\\ProgramData\\Jenkins\\.jenkins\\${env.JOB_NAME}"
                     def savePath = "${saveDir}\\${env.IMAGE_NAME}-${env.BUILD_ID}.tar"
                     
                     // Create the directory if it doesn't exist
-                    bat "mkdir \"${saveDir}\""
+                    bat "if not exist \"${saveDir} mkdir \"${saveDir}\""
                     
                     // Save the Docker image to the specified path
                     bat "docker save -o \"${savePath}\" ${env.IMAGE_NAME}:${env.BUILD_ID}"
