@@ -1,73 +1,28 @@
-# syntax=docker/dockerfile:1
+# Use an official Maven image with JDK 21
+FROM maven:3.9.7-eclipse-temurin-21 AS build
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
+# Set the working directory
+WORKDIR /app
 
-# Create a stage for resolving and downloading dependencies.
-FROM eclipse-temurin:21-jdk-jammy AS deps
+# Copy the Maven configuration files and the project source files
+COPY .mvn/ .mvn
+COPY pom.xml .
+COPY src/ src/
 
-WORKDIR /build
+# Build the application
+RUN mvn clean package -DskipTests
 
-# Install git
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+# Use an official Eclipse Temurin image with JDK 21 as the base image for the application
+FROM eclipse-temurin:21-jdk
 
-# Copy the mvnw wrapper with executable permissions.
-COPY --chmod=0755 mvnw mvnw
-COPY .mvn/ .mvn/
+# Set the working directory
+WORKDIR /app
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.m2 so that subsequent builds don't have to
-# re-download packages.
-RUN --mount=type=bind,source=pom.xml,target=pom.xml \
-    --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
+# Copy the built application from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-################################################################################
-
-# Create a stage for building the application based on the stage with downloaded dependencies.
-FROM deps AS package
-
-WORKDIR /build
-
-COPY ./src src/
-RUN --mount=type=bind,source=pom.xml,target=pom.xml \
-    --mount=type=cache,target=/root/.m2 \
-    ./mvnw package -DskipTests && \
-    mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
-
-################################################################################
-
-# Create a stage for extracting the application into separate layers.
-FROM package AS extract
-
-WORKDIR /build
-
-RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
-
-################################################################################
-
-# Create a new stage for running the application that contains the minimal
-# runtime dependencies for the application.
-FROM eclipse-temurin:21-jre-jammy AS final
-
-# Create a non-privileged user that the app will run under.
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
-USER appuser
-
-# Copy the executable from the "package" stage.
-COPY --from=extract build/target/extracted/dependencies/ ./
-COPY --from=extract build/target/extracted/spring-boot-loader/ ./
-COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
-COPY --from=extract build/target/extracted/application/ ./
-
+# Expose the port the application runs on
 EXPOSE 8081
 
-ENTRYPOINT [ "java", "org.springframework.boot.loader.launch.JarLauncher" ]
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
