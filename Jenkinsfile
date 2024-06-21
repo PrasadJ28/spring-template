@@ -13,14 +13,14 @@ pipeline {
             steps {
                 script {
                     def imageName = "${env.IMAGE_NAME}:${env.BUILD_ID}"
-                    def app = docker.build(imageName)
+                    docker.build(imageName)
                 }
             }
         }
         stage('Save Docker Image Locally') {
             steps {
                 script {
-                    sh 'docker save -o /path/to/save/image/your-docker-image-${env.BUILD_ID}.tar your-docker-image:${env.BUILD_ID}'
+                    sh "docker save -o /path/to/save/image/${env.IMAGE_NAME}-${env.BUILD_ID}.tar ${env.IMAGE_NAME}:${env.BUILD_ID}"
                 }
             }
         }
