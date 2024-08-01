@@ -10,6 +10,7 @@ public class AuthRequest {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+		System.out.println("setting username "+username);
 	}
 	public String getPassword() {
 		return password;
