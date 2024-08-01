@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.web.entities.RegisterRequest;
 import com.web.entities.User;
-import com.web.repositories.UserRepository;
+//import com.web.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 	
-	@Autowired
-    private UserRepository userRepository;
+//	@Autowired
+//    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

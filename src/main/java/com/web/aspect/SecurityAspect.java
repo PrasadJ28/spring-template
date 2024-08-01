@@ -25,7 +25,7 @@ public class SecurityAspect {
 	    @Autowired
 	    private UserDetailsService userDetailsService;
 
-	    @Before("execution(* com.example.controller..*(..))")
+	    @Before("execution(* com.web.controller..*(..))")
 	    public void authenticateRequest() {
 	        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 	        if (requestAttributes == null) {
