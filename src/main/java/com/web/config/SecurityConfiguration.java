@@ -23,21 +23,23 @@ public class SecurityConfiguration {
 		 http
          .authorizeHttpRequests(authorize -> authorize
              .requestMatchers(
-            		 "/api/auth/register", 
-                     "/api/auth/login", 
-                     "/swagger-ui.html", 
-                     "/swagger-ui/**", 
-                     "/swagger-resources/**",
-                     "/v2/api-docs",
-                     "/webjars/**"
-             ).permitAll()
+                      "/api/auth/register",
+                      "/api/auth/login",
+                      "/swagger-ui.html",
+                      "/swagger-ui/**",
+                      "/swagger-resources/**",
+                      "/v2/api-docs",
+                      "/webjars/**",
+                      "/actuator/**",
+                      "/error"
+              ).permitAll()
              .anyRequest().authenticated()
          )
          .csrf(csrf -> csrf.disable())
          .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
-	
+
 	 @Bean
 	    public CorsConfigurationSource corsConfigurationSource() {
 	        CorsConfiguration configuration = new CorsConfiguration();

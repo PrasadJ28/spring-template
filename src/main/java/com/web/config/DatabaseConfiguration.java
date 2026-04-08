@@ -14,12 +14,12 @@ public class DatabaseConfiguration {
 	    DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
 	    dataSource.setDriverClassName("org.postgresql.Driver");
-	    dataSource.setUsername("postgres");
-	    dataSource.setPassword("abcd1234");
+	    dataSource.setUsername("myuser");
+	    dataSource.setPassword("mypassword");
 	    dataSource.setUrl(
-	      "jdbc:postgresql://localhost:5432/postgres?createDatabaseIfNotExist=true"); 
-	    
+	      "jdbc:postgresql://localhost:5432/postgres?createDatabaseIfNotExist=true");
+
 	    return dataSource;
 	}
-	
+
 }

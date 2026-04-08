@@ -13,7 +13,7 @@ COPY src/ src/
 RUN mvn clean package -DskipTests
 
 # Use an official Eclipse Temurin image with JDK 21 as the base image for the application
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jre
 
 # Set the working directory
 WORKDIR /app
